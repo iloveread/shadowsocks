@@ -34,6 +34,7 @@ import socket
 import encrypt
 
 
+# 处理外部请求（request youtube）
 class RemoteHandler(object):
     def __init__(self, conn, local_handler):
         self.conn = conn
@@ -70,9 +71,11 @@ class RemoteHandler(object):
         self.local_handler.conn.end()
 
 
+# 处理内部请求（客户端请求）
 class LocalHandler(object):
     def on_data(self, s, data):
         data = self.encryptor.decrypt(data)
+        # stage 代表什么？作者自定义的。。
         if self.stage == 5:
             if not self.remote_handler.conn.write(data):
                 self.conn.pause()
@@ -101,6 +104,7 @@ class LocalHandler(object):
                 remote_port = struct.unpack('>H', remote_port)[0]
                 self.remote_addr_pair = (remote_addr, remote_port)
                 logging.info('connecting %s:%d' % self.remote_addr_pair)
+                #
                 remote_conn = ssloop.Socket()
                 self.remote_handler = RemoteHandler(remote_conn, self)
 
